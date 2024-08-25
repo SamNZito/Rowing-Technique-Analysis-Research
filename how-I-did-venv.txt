@@ -1,0 +1,13 @@
+python -m venv rowing-ai-env
+
+rowing-ai-env\Scripts\activate
+
+
+
+git shit
+
+git init
+- initalizes a git repo in ur project directory
+
+.gitignore file
+- excludes files like 
