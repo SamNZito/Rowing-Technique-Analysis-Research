@@ -1,3 +1,4 @@
 rowing-ai-env/
 __pycache__/
 *.pyc
+images/*
