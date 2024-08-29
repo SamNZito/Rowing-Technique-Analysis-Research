@@ -8,6 +8,11 @@
 # real time feed back system
 # testing
 
+# add more points like legs
+# collect data overtime
+# develop model
+# real time feedback system
+
 
 import cv2
 import mediapipe as mp
@@ -53,63 +58,87 @@ def extract_key_points(landmarks):
         'left_hip': [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,
                      landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y],
         'right_hip': [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,
-                      landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+                      landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y],
+        'left_knee': [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x,
+                      landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y],
+        'right_knee': [landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x,
+                       landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y],
+        'left_ankle': [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,
+                       landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y],
+        'right_ankle': [landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x,
+                        landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y]
     }
     
 # load a video
 video_source = 'images/rowing2.mp4' # replace with 0 to use webcam
 cap = cv2.VideoCapture(video_source)
 
+paused = False
+
 
 # Initialize the Pose model
 with mp_pose.Pose(min_detection_confidence=0.5) as pose:
     while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            print("End of video stream or failed to read the video")
-            break
+        if not paused:
+            ret, frame = cap.read()
+            if not ret:
+                print("End of video stream or failed to read the video")
+                break
 
-        # Convert the frame to RGB (MediaPipe expects RGB input)
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # Convert the frame to RGB (MediaPipe expects RGB input)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Perform pose detection
-        results = pose.process(frame_rgb)
+            # Perform pose detection
+            results = pose.process(frame_rgb)
 
-        # Check if landmarks are detected
-        if results.pose_landmarks:
-            # Extract key points
-            key_points = extract_key_points(results.pose_landmarks.landmark)
-            # # Draw the landmarks and connections on the frame
-            # mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+            # Check if landmarks are detected
+            if results.pose_landmarks:
+                # Extract key points
+                key_points = extract_key_points(results.pose_landmarks.landmark)
+                # # Draw the landmarks and connections on the frame
+                # mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+                
+                # Calculate angles
+                left_elbow_angle = calculate_angle(key_points['left_shoulder'], key_points['left_elbow'], key_points['left_wrist'])
+                right_elbow_angle = calculate_angle(key_points['right_shoulder'], key_points['right_elbow'], key_points['right_wrist'])
+
+                left_shoulder_angle = calculate_angle(key_points['left_hip'], key_points['left_shoulder'], key_points['left_elbow'])
+                right_shoulder_angle = calculate_angle(key_points['right_hip'], key_points['right_shoulder'], key_points['right_elbow'])
+                
+                # Inside your video processing loop, after calculating shoulder and elbow angles:
+                left_knee_angle = calculate_angle(key_points['left_hip'], key_points['left_knee'], key_points['left_ankle'])
+                right_knee_angle = calculate_angle(key_points['right_hip'], key_points['right_knee'], key_points['right_ankle'])
+
+                color = (0, 0, 0)
+                fScale = 0.8
+                
+                # Display calculated angles on the frame
+                cv2.putText(frame, f'Left Elbow Angle: {int(left_elbow_angle)}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
+                cv2.putText(frame, f'Right Elbow Angle: {int(right_elbow_angle)}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
+                cv2.putText(frame, f'Left Shoulder Angle: {int(left_shoulder_angle)}', (50, 110), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
+                cv2.putText(frame, f'Right Shoulder Angle: {int(right_shoulder_angle)}', (50, 140), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
+                cv2.putText(frame, f'Left Knee Angle: {int(left_knee_angle)}', (50, 170), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
+                cv2.putText(frame, f'Right Knee Angle: {int(right_knee_angle)}', (50, 200), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
+
+                # Draw the landmarks and connections on the frame
+                mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+            # Resize the frame to fit the screen
+            frame_resized = cv2.resize(frame, (target_width, target_height))
             
-             # Calculate angles
-            left_elbow_angle = calculate_angle(key_points['left_shoulder'], key_points['left_elbow'], key_points['left_wrist'])
-            right_elbow_angle = calculate_angle(key_points['right_shoulder'], key_points['right_elbow'], key_points['right_wrist'])
+            # Display the frame with landmarks
+            cv2.imshow('Pose Estimation', frame_resized)
 
-            left_shoulder_angle = calculate_angle(key_points['left_hip'], key_points['left_shoulder'], key_points['left_elbow'])
-            right_shoulder_angle = calculate_angle(key_points['right_hip'], key_points['right_shoulder'], key_points['right_elbow'])
-
-            color = (0, 0, 0)
-            fScale = 0.8
-            
-            # Display calculated angles on the frame
-            cv2.putText(frame, f'Left Elbow Angle: {int(left_elbow_angle)}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
-            cv2.putText(frame, f'Right Elbow Angle: {int(right_elbow_angle)}', (50, 80), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
-            cv2.putText(frame, f'Left Shoulder Angle: {int(left_shoulder_angle)}', (50, 110), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
-            cv2.putText(frame, f'Right Shoulder Angle: {int(right_shoulder_angle)}', (50, 140), cv2.FONT_HERSHEY_SIMPLEX, fScale, (color), 2)
-
-            # Draw the landmarks and connections on the frame
-            mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-
-        # Resize the frame to fit the screen
-        frame_resized = cv2.resize(frame, (target_width, target_height))
+        # # Break the loop if 'q' is pressed
+        # if cv2.waitKey(10) & 0xFF == ord('q'):
+        #     break
         
-        # Display the frame with landmarks
-        cv2.imshow('Pose Estimation', frame_resized)
-
-        # Break the loop if 'q' is pressed
-        if cv2.waitKey(10) & 0xFF == ord('q'):
+        # Check for key presses
+        key = cv2.waitKey(10) & 0xFF
+        if key == ord('q'):
             break
+        elif key == ord(' '):  # Spacebar pressed
+            paused = not paused  # Toggle pause state
 
 # Release the video capture object and close all OpenCV windows
 cap.release()
