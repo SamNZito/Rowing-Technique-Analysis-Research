@@ -23,11 +23,11 @@ def calculate_angle(a, b, c):
 #     "bad": "BASIC/video/badStrokes"
 # }
 data_dirs = {
-    "test": "BASIC/video/testStrokes/bad"
+    "test": "BASIC/video/testing"
 }
 
 # Output directory for JSON files
-output_dir = "BASIC/json_data"
+output_dir = "BASIC/json_data/testing"
 os.makedirs(output_dir, exist_ok=True)
 
 # Process each video file in good and bad strokes directories

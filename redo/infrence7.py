@@ -4,6 +4,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import mediapipe as mp
 from threading import Thread
+import time
 from ollama import Client  # Replace AsyncClient with Client for synchronous
 
 # Initialize the Ollama client
@@ -18,6 +19,8 @@ pose = mp_pose.Pose(static_image_mode=False, model_complexity=1)
 
 # Initialize the flag for controlling feedback requests
 feedback_in_progress = False
+feedback_text = "Processing..."
+
 
 def calculate_angle(a, b, c):
     """Calculate the angle between three points."""
@@ -45,51 +48,9 @@ def end_of_stroke_detected(previous_knee_angle, current_knee_angle, previous_arm
 
     return False, in_flexion, in_arm_extension
 
-# def get_ollama_feedback(prompt):
-#     """Get feedback from Ollama based on the rowing posture prompt."""
-#     global feedback_in_progress
-#     feedback = ""
-#     # Simulate the API call here for demonstration
-#     print(f"Ollama Feedback: {feedback}")  # Print Ollama's feedback to the terminal
-#     feedback_in_progress = False  # Reset the flag after feedback is received
-import asyncio
-from ollama import AsyncClient
-
-# Initialize the asynchronous Ollama client
-client = AsyncClient()
-
-async def fetch_ollama_feedback(prompt):
-    """Asynchronously fetch feedback from Ollama based on the rowing posture prompt."""
-    feedback = ""
-    try:
-        # Await the coroutine to get the response object
-        response = await client.chat(
-            model="llama3", messages=[{"role": "user", "content": prompt}], stream=True
-        )
-
-        # Use async for to process the streaming response
-        async for part in response:
-            # Check if part is a dictionary and contains the expected structure
-            if isinstance(part, dict) and "message" in part and "content" in part["message"]:
-                feedback += part["message"]["content"].strip()
-                print(f"Received part: {part['message']['content'].strip()}")  # Debug print
-            else:
-                print(f"Unexpected part format: {part}")  # Debug print to inspect format
-
-        if feedback:
-            print(f"Ollama Feedback: {feedback}")
-        else:
-            print("No feedback received from Ollama.")
-    except Exception as e:
-        print(f"Error retrieving Ollama feedback: {e}")
-
-
-def get_ollama_feedback(prompt):
-    """Synchronously fetch feedback from Ollama by running the asynchronous function."""
-    asyncio.run(fetch_ollama_feedback(prompt))
-
-
-
+def fix_feedback_text_spacing(text):
+    """Fix spacing issues in feedback text."""
+    return ' '.join([word for word in text.split() if word.isalpha() or word.isalnum()])
 
 def generate_feedback_prompt(elbow_angle, knee_angle, trunk_angle, stroke_classification):
     """Generate a prompt for Ollama to provide feedback."""
@@ -106,6 +67,21 @@ def generate_feedback_prompt(elbow_angle, knee_angle, trunk_angle, stroke_classi
     Do not mention angles, only use things the rower can correct during their stroke.
     """
 
+def get_ollama_feedback(prompt):
+    """Fetch feedback from Ollama synchronously."""
+    global feedback_text
+    feedback_text = "Waiting for feedback..."  # Placeholder while fetching
+    feedback = ""
+    try:
+        response = client.chat(model="llama3", messages=[{"role": "user", "content": prompt}], stream=True)
+        for part in response:
+            if isinstance(part, dict) and "message" in part and "content" in part["message"]:
+                feedback += part["message"]["content"].strip()
+        feedback_text = feedback if feedback else "No feedback received."
+        #feedback_text = fix_feedback_text_spacing(feedback) if feedback else "No feedback received."
+    except Exception as e:
+        feedback_text = f"Error retrieving feedback: {e}"
+
 def request_feedback(prompt):
     """Start a new thread to request Ollama feedback."""
     global feedback_in_progress
@@ -115,14 +91,13 @@ def request_feedback(prompt):
         feedback_thread.start()
 
 def real_time_feedback():
-    global feedback_in_progress
+    global feedback_in_progress, feedback_text
     cap = cv2.VideoCapture("BASIC/video/wyattBad.MOV")
     sequence = []
     previous_knee_angle = None
     previous_arm_angle = None
     in_flexion = True
     in_arm_extension = True
-    feedback_text = "Processing..."
     stroke_classification = "Waiting for stroke..."
 
     while cap.isOpened():
@@ -130,6 +105,7 @@ def real_time_feedback():
         if not ret:
             break
 
+        frame = cv2.resize(frame, (960, 720)) #(640, 480))
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = pose.process(rgb_frame)
 
@@ -160,16 +136,8 @@ def real_time_feedback():
 
                     # Generate feedback prompt for Ollama if stroke is bad
                     if stroke_classification == "Bad" and not feedback_in_progress:
-                        feedback_in_progress = True
                         prompt = generate_feedback_prompt(elbow_angle, knee_angle, trunk_angle, stroke_classification)
-                        
-                        # Use threading to get Ollama feedback without blocking
-                        def update_feedback():
-                            global feedback_in_progress, feedback_text
-                            feedback_text = get_ollama_feedback(prompt)  # This sets feedback_text directly
-                            feedback_in_progress = False
-                        feedback_thread = Thread(target=update_feedback)
-                        feedback_thread.start()
+                        request_feedback(prompt)  # Start feedback thread
 
                     # Clear sequence for the next stroke
                     sequence = []
@@ -180,9 +148,11 @@ def real_time_feedback():
         # Display feedback and classification on the video frame
         cv2.putText(frame, f"Stroke: {stroke_classification}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.putText(frame, f"Feedback: {feedback_text}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        
-        print(feedback_text)
 
+        # Draw pose landmarks
+        mp.solutions.drawing_utils.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+        # Show the frame
         cv2.imshow("Rowing Technique Feedback", frame)
 
         if cv2.waitKey(10) & 0xFF == ord('q'):
