@@ -10,19 +10,17 @@ This repository contains the dataset, AI model, and evaluation scripts for the r
 - **Posture Deviation Analysis:** Computes deviations from ideal rowing angles based on biomechanical research.
 - **Reproducibility:** Scripts for training, testing, and evaluating the AI model.
 
-## Repository Structure
-├── testing.csv                # Raw and processed rowing stroke data
-├── models/                 # Trained AI models
-│   ├── rowing_technique_model.h5     # Pretrained TensorFlow model
-├── redo/                 # Trained AI models
-│   ├── inference7.py     # Runs the Actual working version of AI system
-├── scripts/                # Data processing and AI training scripts
-│   ├── preprocess.py       # Extracts joint angles from raw data
-│   ├── train_model.py      # Trains the AI model on labeled data
-│   ├── evaluate_model.py   # Computes accuracy and posture deviation
-├── results/                # Experiment results and logs
-│   ├── evaluation_metrics.json # Accuracy, precision, recall, etc.
-├── README.md               # Project documentation
+## Important Files
+- testing.csv                # Raw and processed rowing stroke data
+- models                 # Trained AI models
+- ├── rowing_technique_model.h5     # Pretrained TensorFlow model
+- redo/                 # Trained AI models
+- ├── inference7.py     # Runs the Actual working version of AI system
+- scripts:                # Data processing and AI training scripts
+- ├── preprocess.py       # Extracts joint angles from raw data
+- ├── train_model.py      # Trains the AI model on labeled data
+- ├── evaluate_model.py   # Computes accuracy and posture deviation
+- README.md               # Project documentation
 
 
 ## Installation
@@ -31,28 +29,43 @@ Ensure you have **Python 3.9+** installed along with the required dependencies.
 
 ```sh
 pip install -r requirements.txt
+```
 
+## Running the AI Model
+### 1. Data Collection
 
-Running the AI Model
-1. Data Preprocessing
+To capture rowing strokes and extract body key points:
+```sh
+python capture_stroke.py
+python extract_key_points.py
+```
+### 2. Preprocessing and Visualization
 
-Run the following script to preprocess raw rowing stroke data into structured CSV files:
+Process rowing footage and visualize detected landmarks:
+```sh
+python draw_body_landmarks.py
+```
+### 3. Running Inference
 
-python scripts/preprocess.py
+Run AI model inference to classify strokes:
+```sh
+python inference7.py
+```
+For testing different inference versions:
+```sh
+python inference2.py
+python inference3.py
+...
+python inference8.py
+```
+### 4. Evaluating the Model
 
-2. Training the Model
-
-Train the AI model using:
-
-python scripts/train_model.py
-
-3. Evaluating the Model
-
-Evaluate classification performance and compute posture deviation:
-
-python scripts/evaluate_model.py
-
-Results
+Compute accuracy, precision, recall, and posture deviation:
+```sh
+python evaluate.py
+python calc_avg_angle_deviation.py
+```
+## Results
 
 The AI system was tested against expert rowing coaches, with key findings including:
 
@@ -60,10 +73,13 @@ The AI system was tested against expert rowing coaches, with key findings includ
     Posture deviation improved by 2.89° with AI guidance and 4.32° with coach guidance.
     Rower feedback highlighted AI’s consistency but preferred human adaptability.
 
-Reproducibility
+## Posture Deviation Calculation
+
+To quantify how much a rower deviates from optimal technique, we computed the average posture deviation using elbow, knee, and trunk angles:
+​​
+## Reproducibility
 
 All data, trained models, and evaluation scripts are provided for full reproducibility. Researchers can modify hyperparameters, train on new datasets, and analyze technique deviations.
-Citation
 
 If you use this dataset or code, please cite:
 
