@@ -1,29 +1,75 @@
-Introduction:
-Rowing is a sport that demands precision, strength, and endurance, with technique playing a crucial role in optimizing performance and minimizing injury risk. The complex biomechanics involved in rowing require athletes to maintain proper form throughout each stroke, a task that can be challenging even for experienced rowers. Traditional coaching methods, while effective, often rely on the coach’s observational skills, which can be subjective and limited by human perception. Additionally, these methods are time-consuming and may not provide the real-time feedback necessary for immediate correction during training sessions.
-The motivation for this research stems from the growing interest in applying artificial intelligence (AI) to sports performance analysis, particularly in disciplines where technique is a significant determinant of success. In rowing, even minor inefficiencies in technique can lead to significant losses in speed and increase the risk of overuse injuries. By leveraging AI and computer vision technologies, it is possible to develop a system that not only provides objective and consistent technique assessments but also offers real-time feedback that can be immediately acted upon by the rower.
-This research addresses the problem of developing an AI system capable of analyzing rowing techniques using video footage. The primary goal is to provide rowers and coaches with real-time feedback on form, posture, stroke efficiency, and injury prevention. The secondary goal is to identify deviations from ideal technique and suggest corrective actions, thereby enhancing the training process and potentially reducing the incidence of technique-related injuries. According to studies such as "ARrow: A Real-Time AR Rowing Coach" and "Inaccurate Action Detection Algorithm for Rowing Machine Exercise Based on Attention-CNN," AI has already demonstrated its effectiveness in detecting and correcting improper techniques in rowing, making it a promising tool for further development.
-Moreover, the application of AI in sports is becoming increasingly widespread, with systems like the one described in "Intelligent Recognition System of Sports Athletes’ Wrong Actions Based on AI+IoT" proving that AI can be effectively used to analyze and enhance athletic performance across various sports. Given the importance of technique in rowing, a sport where even minor deviations can impact speed and efficiency, the development of an AI system tailored to this sport is both timely and crucial.
-The problem can be formulated as a search problem in the context of AI, where the goal is to identify and correct suboptimal rowing techniques using video data. The initial state is represented by the raw, unprocessed video footage of a rower during training. The goal state is achieving optimal technique, as defined by biomechanical standards and expert coaching guidelines. Actions involve analyzing the video to detect deviations from optimal technique, suggesting corrections, and providing feedback. The transition model maps changes in rowing technique as feedback is implemented and the rower adjusts their form. The goal test evaluates whether the rower's technique meets the defined standards, while the path cost could be associated with the time taken or the number of adjustments needed to achieve optimal technique.
-In conclusion, this research aims to bridge the gap between traditional rowing coaching and modern AI-driven performance analysis. By developing a system that analyzes rowing technique through video footage, this project seeks to enhance the accuracy, accessibility, and effectiveness of technique training in rowing, potentially setting a new standard in sports coaching and performance enhancement.
+# Rowing Technique Analysis Using AI Feedback
+
+## Overview
+This repository contains the dataset, AI model, and evaluation scripts for the research project **"Rowing Technique Analysis Using AI Feedback for Performance Enhancement."** The project aims to compare AI-based rowing feedback with traditional coaching by analyzing key joint angles (elbow, knee, and trunk) during strokes.
+
+## Features
+- **Data Collection:** Preprocessed rowing stroke data, including labeled joint angles.
+- **AI Model:** A TensorFlow-based binary classification model that predicts whether a stroke has "good" or "bad" form.
+- **Evaluation Metrics:** Includes classification accuracy, precision, recall, and F1-score.
+- **Posture Deviation Analysis:** Computes deviations from ideal rowing angles based on biomechanical research.
+- **Reproducibility:** Scripts for training, testing, and evaluating the AI model.
+
+## Repository Structure
+├── testing.csv                # Raw and processed rowing stroke data
+├── models/                 # Trained AI models
+│   ├── rowing_technique_model.h5     # Pretrained TensorFlow model
+├── redo/                 # Trained AI models
+│   ├── inference7.py     # Runs the Actual working version of AI system
+├── scripts/                # Data processing and AI training scripts
+│   ├── preprocess.py       # Extracts joint angles from raw data
+│   ├── train_model.py      # Trains the AI model on labeled data
+│   ├── evaluate_model.py   # Computes accuracy and posture deviation
+├── results/                # Experiment results and logs
+│   ├── evaluation_metrics.json # Accuracy, precision, recall, etc.
+├── README.md               # Project documentation
 
 
+## Installation
+### Prerequisites
+Ensure you have **Python 3.9+** installed along with the required dependencies.
 
-Related Works:
-	The application of artificial intelligence (AI) and computer vision in sports performance analysis has seen significant advancements, particularly in the context of analyzing and enhancing athletic techniques. Rowing, a sport that relies heavily on precise, synchronized movements, presents a unique opportunity for the application of these technologies. This section reviews relevant literature that explores the integration of AI and computer vision in sports, with a specific focus on rowing and other technique-intensive sports.
-AI and Computer Vision in Rowing
-ARrow: A Real-Time AR Rowing Coach (Iannucci et al., 2023) is a prominent example of how augmented reality (AR) and computer vision can be applied to rowing. ARrow tracks a rower's body movement and stroke cycle in real-time, providing immediate visual feedback to both athletes and coaches. The system leverages state-of-the-art computer vision techniques to extract 3D skeletal data, enabling detailed analysis of rowing technique. A unique feature of ARrow is the "ghost rower" function, which allows athletes to compare their performance against an ideal or previously recorded session. This real-time feedback is crucial for improving technique and synchronizing movements, particularly in team rowing.
-Human Action Recognition and AI-based Technique Analysis
-Human action recognition plays a critical role in sports performance analysis, and deep learning models such as convolutional neural networks (CNNs) have been instrumental in advancing this field. The study on an Inaccurate Action Detection Algorithm for Rowing Machine Exercise (2022) employs an attention-based CNN to detect and correct deviations in rowing machine exercises. This algorithm is designed to recognize subtle errors in rowing strokes, providing valuable feedback to improve technique. The focus on precise error detection aligns closely with the goals of this research, which aims to enhance rowing performance through detailed technique analysis​.
-In another study, AI and Computer-Based Methods in Performance Evaluation (2023), the authors discuss the broader application of AI in sports. They highlight the potential of AI-driven systems to provide real-time feedback and improve athletic performance across various sports, including rowing. The integration of AI with biomechanical models is emphasized as a key factor in delivering precise and actionable feedback, which is essential for optimizing rowing techniques​.
-Intelligent Recognition Systems for Sports
-The Intelligent Recognition System of Sports Athletes’ Wrong Actions Based on AI+IoT (Zhang et al., 2022) explores the use of AI combined with the Internet of Things (IoT) to detect and correct incorrect actions in athletes. This system uses computer vision to extract skeletal data and compare it with ideal movement patterns, providing real-time feedback. The application of this system in rowing could significantly enhance the accuracy of technique analysis by integrating data from multiple sensors to deliver comprehensive feedback on performance​.
-Comprehensive Reviews and Comparative Studies
-A comprehensive review titled A Comprehensive Review of Computer Vision-Based Human Motion Capture for Sports Analysis (Dubey et al., 2023) provides an in-depth overview of the methods and technologies used in human motion capture for sports. The review highlights the importance of integrating AI with biomechanical models to enhance the precision of movement analysis. This aligns with the current research's goal of developing a system that offers detailed, real-time feedback on rowing techniques based on biomechanical principles​.
-An Overview of Human Action Recognition in Sports Based on AI
-The work "An Overview of Human Action Recognition in Sports Based on AI" provides a comprehensive review of AI techniques used in sports, with a focus on human action recognition. The methods discussed, such as pose estimation and action detection, are directly applicable to the analysis of rowing techniques, offering insights into the state-of-the-art approaches in the field.
-Intelligent Performance Evaluation in Rowing Sport Using a Graph-Matching Network
-"Intelligent Performance Evaluation in Rowing Sport Using a Graph-Matching Network" presents a novel approach to evaluating rowing techniques using a graph-matching network. This study utilizes the OpenPose system for pose estimation and applies graph neural networks (GNNs) to assess the similarity in rowing postures between team members. The methodologies discussed in this paper provide a strong foundation for developing AI-driven systems for rowing technique analysis
-Strengths and Limitations of Existing Systems
-The systems discussed offer distinct strengths and limitations. Real-time feedback systems like ARrow provide immediate benefits by allowing athletes to adjust their technique during training sessions. However, these systems often require significant processing power, which can be a limitation in practical applications. Deep learning models, such as those used in the Inaccurate Action Detection Algorithm, offer high accuracy in movement recognition but are computationally intensive and require large datasets for training. The integration of AI with IoT, as demonstrated by the Intelligent Recognition System, offers a comprehensive approach to performance analysis but may be challenging to implement due to the complexity of data integration.
-Conclusion
-The reviewed literature demonstrates the potential of AI and computer vision technologies in revolutionizing rowing technique analysis. By building on the strengths of existing systems and addressing their limitations, this research aims to develop a system that provides real-time, actionable feedback to rowers, thereby enhancing both performance and safety. The integration of advanced AI techniques with practical applications in sports represents a promising direction for future research and development in this field.
+```sh
+pip install -r requirements.txt
+
+
+Running the AI Model
+1. Data Preprocessing
+
+Run the following script to preprocess raw rowing stroke data into structured CSV files:
+
+python scripts/preprocess.py
+
+2. Training the Model
+
+Train the AI model using:
+
+python scripts/train_model.py
+
+3. Evaluating the Model
+
+Evaluate classification performance and compute posture deviation:
+
+python scripts/evaluate_model.py
+
+Results
+
+The AI system was tested against expert rowing coaches, with key findings including:
+
+    AI correctly classified strokes with ~69% accuracy.
+    Posture deviation improved by 2.89° with AI guidance and 4.32° with coach guidance.
+    Rower feedback highlighted AI’s consistency but preferred human adaptability.
+
+Reproducibility
+
+All data, trained models, and evaluation scripts are provided for full reproducibility. Researchers can modify hyperparameters, train on new datasets, and analyze technique deviations.
+Citation
+
+If you use this dataset or code, please cite:
+
+@misc{zito2024rowing,
+  author = {Samuel Zito},
+  title = {Rowing Technique Analysis Using AI Feedback for Performance Enhancement},
+  year = {2024},
+  url = {https://github.com/your-repo-link}
+}
