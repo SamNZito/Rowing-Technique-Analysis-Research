@@ -87,5 +87,5 @@ If you use this dataset or code, please cite:
   author = {Samuel Zito},
   title = {Rowing Technique Analysis Using AI Feedback for Performance Enhancement},
   year = {2024},
-  url = {https://github.com/your-repo-link}
+  url = {https://github.com/SamNZito/Rowing-Technique-Analysis-Research/}
 }
