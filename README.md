@@ -13,15 +13,89 @@ This repository contains the dataset, AI model, and evaluation scripts for the r
 ## Important Files
 - testing.csv                # Raw and processed rowing stroke data
 - models                 # Trained AI models
-- ├── rowing_technique_model.h5     # Pretrained TensorFlow model
+- rowing_technique_model.h5     # Pretrained TensorFlow model
 - redo/                 # Trained AI models
-- ├── inference7.py     # Runs the Actual working version of AI system
+- inference7.py     # Runs the Actual working version of AI system
 - scripts:                # Data processing and AI training scripts
-- ├── preprocess.py       # Extracts joint angles from raw data
-- ├── train_model.py      # Trains the AI model on labeled data
-- ├── evaluate_model.py   # Computes accuracy and posture deviation
+- preprocess.py       # Extracts joint angles from raw data
+- train_model.py      # Trains the AI model on labeled data
+- evaluate_model.py   # Computes accuracy and posture deviation
 - README.md               # Project documentation
 
+## File Structure
+```
+
+─Rowing-Technique-Analysis-Research
+    │   .gitignore
+    │   angle.py
+    │   bad_rowing_data.csv
+    │   bad_rowing_data_wyatt.csv
+    │   good_rowing_data_wyatt.csv
+    │   how-I-did-venv.txt
+    │   pose-estimation.py
+    │   README.md
+    │   requirements.txt
+    │   testing.csv
+    │   
+    ├───BASIC
+    │   └───json_data
+    │       └───dataset
+    │           ├───bad
+    │           │       bad_stroke-01.json
+    │           │       ...
+    │           │
+    │           ├───good
+    │           │       good_stroke-1.json
+    │           │       ...
+    │           │
+    │           └───testData
+    │               ├───bad
+    │               │       test_stroke-bad.mp4-1.json
+    │               │       ...
+    │               │
+    │               └───good
+    │                       test_stroke-good.mp4-1.json
+    │                       ...
+    │
+    ├───images
+    │       erg.jpg
+    │       ...
+    │
+    ├───models
+    │       rowing_technique_model.h5
+    │
+    └───redo
+        │   calc_avg_angle_deviation.py
+        │   capture_stroke.py
+        │   data_loader.py
+        │   draw_body_landmarks.py
+        │   evaluate.py
+        │   extract_key_points.py
+        │   for_display.py
+        │   inference_v1.1.py
+        │   infrence.py
+        │   infrence2.py
+        │   infrence3.py
+        │   infrence4.py
+        │   infrence5.py
+        │   infrence6.py
+        │   infrence7.py
+        │   infrence8.py
+        │   model.py
+        │   tempCodeRunnerFile.py
+        │   train.py
+        │
+        └───important_documents_research_paper
+                IMG_3487.jpg
+                IMG_3488.jpg
+                IMG_3489.jpg
+                Methodology.drawio.png
+                model.png
+                Screenshot 2024-11-10 173456.png
+                Screenshot 2024-11-10 173722.png
+                Screenshot 2024-11-14 193255.png
+
+```
 
 ## Installation
 ### Prerequisites
